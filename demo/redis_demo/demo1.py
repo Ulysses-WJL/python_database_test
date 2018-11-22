@@ -10,9 +10,10 @@ A用户 100010001000001  //活跃了4天
 B用户 111111111111111  //每日必到
 '''
 import redis
-import password
+from ..password import redis_passwd
+
 # 连接Redis，选择 db0
-r = redis.Redis(host='localhost', port=6379, password=password.redis_passwd, db=0)
+r = redis.Redis(host='localhost', port=6379, password=redis_passwd, db=0)
 
 # A用户，一年中，每3天上线一次
 for i in range(0, 365, 3):

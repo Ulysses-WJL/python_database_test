@@ -34,5 +34,3 @@ for dat in data:
 
 cur.close()
 conn.close()
-
-
