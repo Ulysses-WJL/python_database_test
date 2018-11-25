@@ -68,3 +68,28 @@ print(r.get('yu'))
 print(r.get('huo'))
 print(r.get('yihuo'))
 print(r.get('fei'))
+
+r.set('len', '012345678')
+ret = r.strlen('len')
+print(ret)
+
+# 加
+r.set('num', 1)
+r.incr('num')
+print(r.get('num'))
+r.incrby('num', 3)
+print(r.get('num'))
+r.incrbyfloat('num', 2.1)
+print(r.get('num'))
+
+# 减
+r.set('num', 10)
+r.decr('num')
+print(r.get('num'))
+r.decrby('num', 4)
+print(r.get('num'))
+
+# 追加
+r.set('code', 'abcdefg')
+r.append('code', 'hijk')
+print(r.get('code'))
