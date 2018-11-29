@@ -3,3 +3,4 @@
 venv/
 password.py
 __pycache__
+*.rdb
