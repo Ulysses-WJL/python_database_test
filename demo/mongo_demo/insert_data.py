@@ -25,3 +25,13 @@ x = col.insert_many(mylist)
 # 输出插入的所有文档对应的 _id 值
 print(x.inserted_ids)
 # [ObjectId('5c00b2068c70ac67e3a197fe'), ObjectId('5c00b2068c70ac67e3a197ff'), ObjectId('5c00b2068c70ac67e3a19800'), ObjectId('5c00b2068c70ac67e3a19801'), ObjectId('5c00b2068c70ac67e3a19802')]
+
+mylist_2 = [
+    {'_id': 1, 'name': 'Jack', 'num': 1233},
+    {'_id': 2, 'name': 'Tom', 'num': 1233},
+    {'_id': 3, 'name': 'Candy', 'num': 1233},
+    {'_id': 4, 'name': 'Ana', 'num': 1233},
+]
+x = col.insert_many(mylist_2)
+print(x.inserted_ids)
+# [1, 2, 3, 4]
