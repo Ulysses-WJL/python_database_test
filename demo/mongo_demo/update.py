@@ -6,13 +6,13 @@ import pymongo
 client = pymongo.MongoClient(host="localhost", port=27017)
 db = client['first_demo']
 col = db['student']
-stu_list =[
+stu_list = [
     {'_id': 1, 'name': 'Jack', 'score': 90},
     {'_id': 2, 'name': 'Tom', 'score': 85},
     {'_id': 3, 'name': 'Candy', 'score': "A"},
     {'_id': 4, 'name': 'Ana', 'score': "B"},
 ]
-col.insert_many(stu_list)
+# col.insert_many(stu_list)
 for x in col.find():
     print(x)
 # {'_id': 1, 'name': 'Jack', 'socre': 90}
@@ -46,3 +46,9 @@ for x in col.find():
 # {'_id': 2, 'name': 'Tom', 'score': 86}
 # {'_id': 3, 'name': 'Candy', 'score': 'S+'}
 # {'_id': 4, 'name': 'Ana', 'score': 'B'}
+
+ret = col.replace_one({'name': 'Jack'}, {'name': 'John'})
+print(ret.matched_count)
+print(ret.modified_count)
+for doc in col.find():
+    print(doc)
