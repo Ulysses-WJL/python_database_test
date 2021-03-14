@@ -1,36 +1,42 @@
 """sqlalchemy  ORM 对象-关系映射
 """
 from os.path import dirname
+import random
+import string
 from sqlalchemy import Column, String, Integer, create_engine, orm, exc, desc
 from sqlalchemy.ext.declarative import declarative_base
-from password import user, mysql_passwd
 # 对象基类,可以自动与一表关联
 base = declarative_base()
 # 数据库类型+数据库驱动://用户名:密码（没有密码则为空，不填）@数据库主机地址/数据库名?编码
 # dialect+driver://username:password@host:port/database?charset=utf8mb4
-dbname = 'ex1'
-DSN = f'mysql+pymysql://{user}:{mysql_passwd}@localhost:3306/{dbname}'
+DBNAME = 'test'
+USER = 'root'
+PASSWD = 'Wjl62300313.'
+HOST = 'localhost'
+PORT = "3306"
+DSN = f'mysql+pymysql://{USER}:{PASSWD}@{HOST}:{PORT}/{DBNAME}'
 # User对象
 
 
 def tformat(s): return str(s).title().ljust(10)
 
 
-class Employee(base):
+class StuInfo(base):
 
     #  该表在数据库中的名字
-    __tablename__ = 'Employee'
+    __tablename__ = 'stuinfo'
     # 结构
-    id = Column(Integer, primary_key=True)
+    sid = Column(Integer, primary_key=True)
+    cid = Column(Integer, primary_key=True)
     name = Column(String(20))
-    age = Column(Integer)
-    time = Column(Integer)
+    gender = Column(String(1))
+    score = Column(Integer)
 
     def __str__(self):
-        return ''.join(map(tformat, (self.id, self.name, self.age, self.time)))
+        return ''.join(map(tformat, (self.sid, self.cid, self.name, self.gender, self.score)))
 
 
-class EmployeeOperation(object):
+class StuOperation:
 
     def __init__(self, dsn):
         try:
@@ -46,21 +52,22 @@ class EmployeeOperation(object):
         except exc.OperationalError:
             eng = create_engine(dirname(dsn))
             connection = eng.connect()
-            connection.execute(f'CREATE DATABASE {dbname}').close()
+            connection.execute(f'CREATE DATABASE {DBNAME}').close()
             eng = create_engine(dsn)
         # 创建数据库会话类
         Session = orm.sessionmaker(bind=eng)
         # 用这个类实例化 一个数据库连接
         self.ses = Session()
-        self.users = Employee.__table__
+        self.users = StuInfo.__table__
         # 引擎和表的元数据进行额外的绑定，这张表的所有操作都会绑定到这个指定的引擎中，
         self.eng = self.users.metadata.bind = eng
 
     def insert(self, **dit_args):
 
-        self.ses.add(Employee(id=dit_args['id'], name=dit_args['name'],
-                              age=dit_args['age'], time=dit_args['time']
-                              ))
+        self.ses.add(StuInfo(
+            sid=dit_args['sid'], cid=dit_args['cid'], name=dit_args['name'],
+            gender=dit_args['gender'], score=dit_args['score']
+        ))
         self.ses.commit()
     # def insert(self):
     #     self.ses.add(Employee(id=9, name='kk', age=22, time=222))
@@ -68,7 +75,7 @@ class EmployeeOperation(object):
 
     def get_all(self):
         # printf('\n%s' % ''.join(map(cformat,FIELDS)))
-        users = self.ses.query(Employee).order_by(desc(Employee.id)).all()
+        users = self.ses.query(StuInfo).order_by(desc(StuInfo.id)).all()
         for user in users:
             print(user)
         self.ses.commit()
@@ -76,7 +83,7 @@ class EmployeeOperation(object):
     def delete(self, user_id):
         # filter_by 返回查询结果集
         # user = self.ses.query(Employee).filter_by(id=user_id).first()
-        user = self.ses.query(Employee).filter(Employee.id == user_id).first()
+        user = self.ses.query(StuInfo).filter(StuInfo.id == user_id).first()
         self.ses.delete(user)
         self.ses.commit()
     # 委托
@@ -91,17 +98,21 @@ class EmployeeOperation(object):
 
 def main():
     try:
-        orm = EmployeeOperation(DSN)
+        orm = StuOperation(DSN)
     except RuntimeError:
         print('Error:not supported\n')
         return
-    Uly = {'id': 10, 'name': 'Ulysess', 'age': 22, 'time': 222}
     if orm.exists():
         orm.drop()
     orm.create()
-    orm.insert(**Uly)
     # orm.delete(22)
-    orm.get_all()
+    # orm.get_all()
+    for sid in range(1, 3000):
+        name = "".join(random.choices(string.ascii_letters, k=10))
+        gender = random.choice(['F', 'M'])
+        for cid in range(1, 6):
+            score = random.randint(1, 100)
+            orm.insert(sid=sid, name=name, gender=gender, cid=cid, score=score)
     orm.finish()
 
 
